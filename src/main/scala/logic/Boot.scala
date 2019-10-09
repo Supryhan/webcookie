@@ -21,7 +21,7 @@ object Boot extends App {
   val users: Map[UserId, Bet] = Map.empty
 
   val route =
-    path("put1") {
+    path("put1" / IntNumber) { id =>
       cookie("userName") { nameCookie =>
         complete(s"The logged in user is '${nameCookie.value}'")
       }
