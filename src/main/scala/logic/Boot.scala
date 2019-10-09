@@ -21,17 +21,29 @@ object Boot extends App {
   val users: Map[UserId, Bet] = Map.empty
 
   val route =
-    path("put") {
+    path("put1") {
       cookie("userName") { nameCookie =>
         complete(s"The logged in user is '${nameCookie.value}'")
       }
     } ~
-      path("put") {
+      path("put2") {
+        get {
+          optionalCookie("userName") { nameCookie =>
+            complete(s"The logged in user is '${nameCookie.get.value}'")
+          }
+        }
+      } ~
+      path("put3") {
+        get { ctx =>
+          ctx.complete(s"The HTTP method is '${ctx.request.method}'")
+        }
+      } ~
+      path("put0") {
         get {
           setCookie(HttpCookie("userName", value = "paul")) {
             complete("The user was logged in")
           }
-//          complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, "<h1>OK, no cookie</h1>"))
+          //          complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, "<h1>OK, no cookie</h1>"))
         }
       }
 
