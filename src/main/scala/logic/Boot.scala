@@ -1,29 +1,38 @@
 package logic
 
 import akka.actor.ActorSystem
+import akka.http.scaladsl.server.RouteResult
+import akka.http.scaladsl.server.{RequestContext, Route}
 import akka.http.scaladsl.Http
-import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.headers.HttpCookie
 import akka.http.scaladsl.server.Directives._
 import akka.stream.ActorMaterializer
 
+import scala.concurrent.{ExecutionContextExecutor, Future}
 import scala.io.StdIn
 
 object Boot extends App {
 
-  implicit val system = ActorSystem("my-system")
-  implicit val materializer = ActorMaterializer()
+  implicit val system: ActorSystem = ActorSystem("my-system")
+  implicit val materializer: ActorMaterializer = ActorMaterializer()
   // needed for the future flatMap/onComplete in the end
-  implicit val executionContext = system.dispatcher
+  implicit val executionContext: ExecutionContextExecutor = system.dispatcher
   type Bet = Int
   type UserId = String
 
   val users: Map[UserId, Bet] = Map.empty
 
-  val route =
+  def d(rc: RequestContext): Future[RouteResult] = rc.complete(Future("_"))
+
+  val route: Route =
     path("put1" / IntNumber) { id =>
-      cookie("userName") { nameCookie =>
-        complete(s"The logged in user is '${nameCookie.value}'")
+      optionalCookie("userName") {
+        case Some(v) => get {
+          d
+        }
+        case None => get {
+          d
+        }
       }
     } ~
       path("put2") {
