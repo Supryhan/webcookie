@@ -27,12 +27,14 @@ object Boot extends App {
   val route: Route =
     path("put1" / IntNumber) { id =>
       optionalCookie("userName") {
-        case Some(v) => get {
-          d
-        }
-        case None => get {
-          d
-        }
+        case Some(v) =>
+          get { ctx =>
+            d(ctx)
+          }
+        case None =>
+          get { ctx =>
+            d(ctx)
+          }
       }
     } ~
       path("put2") {
